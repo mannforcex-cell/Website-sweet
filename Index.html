@@ -1,0 +1,371 @@
+ <!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IMAN — Sweet Dream story</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --lav: #c9b6e4;
+    --peach: #f3a9b8;
+    --moon: #fdf6e8;
+    --ink: #f3f1fb;
+    --ink-dim: #cfc9e8;
+    --glass: rgba(15,12,32,0.42);
+    --glass-brd: rgba(255,255,255,0.14);
+  }
+  *{ box-sizing:border-box; }
+  html,body{
+    margin:0; padding:0;
+    background:#0a0e27;
+    color:var(--ink);
+    font-family:'Sora', sans-serif;
+    overflow-x:hidden;
+    width:100%;
+  }
+  a{ color:inherit; }
+
+  /* ===== BACKGROUND VIDEO ===== */
+  .bg-video-wrap{
+    position:fixed; inset:0; z-index:-2; overflow:hidden;
+    background: radial-gradient(ellipse 120% 90% at 50% 0%, #1b2145 0%, #0a0e27 65%);
+  }
+  video.bg-video{
+    position:absolute; top:50%; left:50%;
+    min-width:100%; min-height:100%;
+    width:auto; height:auto;
+    transform:translate(-50%,-50%);
+    object-fit:cover;
+  }
+  .bg-tint{
+    position:fixed; inset:0; z-index:-1;
+    background: linear-gradient(180deg, rgba(10,14,39,0.55) 0%, rgba(10,14,39,0.35) 30%, rgba(10,14,39,0.65) 75%, rgba(10,14,39,0.92) 100%);
+  }
+
+  /* ===== TOP BAR ===== */
+  .topbar{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 20px 22px;
+  }
+  .brand{
+    font-family:'Fraunces', serif; font-style:italic; font-weight:500;
+    font-size:19px; letter-spacing:0.01em; color:var(--moon);
+  }
+  .menu-btn{
+    width:46px; height:46px; border-radius:50%;
+    background:var(--glass); border:1px solid var(--glass-brd);
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; color:var(--ink);
+    transition:transform .2s ease, background .2s ease;
+  }
+  .menu-btn:hover{ transform:scale(1.06); background:rgba(255,255,255,0.1); }
+  .menu-btn:focus-visible{ outline:2px solid var(--peach); outline-offset:2px; }
+  .menu-btn svg{ width:20px; height:20px; }
+
+  /* ===== SIDE DRAWER (serek tepi) ===== */
+  .scrim{
+    position:fixed; inset:0; background:rgba(5,6,18,0.55);
+    opacity:0; pointer-events:none; transition:opacity .35s ease; z-index:60;
+  }
+  .scrim.open{ opacity:1; pointer-events:auto; }
+
+  .drawer{
+    position:fixed; top:0; right:0; height:100%;
+    width:min(340px, 86vw);
+    background: linear-gradient(180deg, #12163a 0%, #0c0f28 100%);
+    border-left:1px solid var(--glass-brd);
+    transform:translateX(100%);
+    transition:transform .4s cubic-bezier(.22,.9,.3,1);
+    z-index:70; padding:30px 26px;
+    display:flex; flex-direction:column;
+  }
+  .drawer.open{ transform:translateX(0); }
+  .drawer-close{
+    align-self:flex-end; width:38px; height:38px; border-radius:50%;
+    background:rgba(255,255,255,0.06); border:1px solid var(--glass-brd);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink);
+    margin-bottom:30px;
+  }
+  .drawer-close:focus-visible{ outline:2px solid var(--peach); outline-offset:2px; }
+  .drawer h3{
+    font-family:'Fraunces', serif; font-style:italic; font-weight:500;
+    font-size:26px; color:var(--moon); margin:0 0 8px;
+  }
+  .drawer p.sub{ color:var(--ink-dim); font-size:13.5px; margin:0 0 28px; line-height:1.6; }
+  .drawer-links{ display:flex; flex-direction:column; gap:12px; margin-bottom:auto; }
+  .drawer-links a{
+    text-decoration:none; font-size:15px; padding:13px 16px; border-radius:12px;
+    background:rgba(255,255,255,0.04); border:1px solid var(--glass-brd);
+    display:flex; align-items:center; justify-content:space-between;
+    transition:background .2s ease, transform .2s ease;
+  }
+  .drawer-links a:hover{ background:rgba(255,255,255,0.09); transform:translateX(-3px); }
+  .drawer-credit{
+    font-size:11.5px; color:var(--ink-dim); letter-spacing:0.06em; text-align:center; padding-top:24px;
+    border-top:1px solid var(--glass-brd); margin-top:24px;
+  }
+  .drawer-credit b{ color:var(--peach); font-weight:600; }
+
+  /* ===== SOUND TOGGLE ===== */
+  .sound-btn{
+    position:fixed; bottom:26px; right:22px; z-index:40;
+    width:56px; height:56px; border-radius:50%;
+    background:linear-gradient(135deg, var(--moon), var(--lav));
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; box-shadow:0 6px 24px rgba(201,182,228,0.35);
+    border:none; transition:transform .25s ease;
+  }
+  .sound-btn:hover{ transform:scale(1.07); }
+  .sound-btn:focus-visible{ outline:2px solid var(--peach); outline-offset:3px; }
+  .sound-btn svg{ width:24px; height:24px; color:#181231; }
+
+  /* ===== LAYOUT ===== */
+  .wrap{ max-width:1040px; margin:0 auto; padding:0 32px; position:relative; z-index:1; }
+
+  .hero{
+    min-height:100svh; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; text-align:center;
+    padding:110px 28px 60px;
+  }
+  .eyebrow{ font-size:13px; letter-spacing:0.16em; color:var(--lav); margin-bottom:20px; }
+  h1.name{
+    font-family:'Fraunces', serif; font-weight:600; font-style:italic;
+    font-size:clamp(64px, 17vw, 140px); line-height:0.92; margin:0 0 26px;
+    background:linear-gradient(180deg, var(--moon) 0%, var(--lav) 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .tagline{
+    font-family:'Fraunces', serif; font-weight:300; font-style:italic;
+    font-size:clamp(19px, 3.6vw, 25px); max-width:520px; line-height:1.55; margin:0 auto 40px;
+    color:var(--ink);
+  }
+  .hero-cta{ display:flex; gap:14px; flex-wrap:wrap; justify-content:center; }
+  .btn{
+    font-family:'Sora'; font-size:14.5px; font-weight:600; text-decoration:none;
+    padding:15px 30px; border-radius:100px; cursor:pointer; border:none;
+    transition:transform .25s ease, box-shadow .25s ease; display:inline-flex; align-items:center; gap:8px;
+  }
+  .btn.solid{
+    background:linear-gradient(135deg, var(--moon), var(--lav)); color:#181231;
+    box-shadow:0 6px 24px rgba(201,182,228,0.3);
+  }
+  .btn.solid:hover{ transform:translateY(-3px); box-shadow:0 10px 30px rgba(201,182,228,0.45); }
+  .btn.ghost{
+    background:var(--glass); color:var(--moon); border:1px solid var(--glass-brd);
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  }
+  .btn.ghost:hover{ background:rgba(255,255,255,0.1); transform:translateY(-3px); }
+  .btn:focus-visible{ outline:2px solid var(--peach); outline-offset:3px; }
+
+  section{ padding:100px 0; position:relative; }
+  .divider{ width:1px; height:60px; margin:0 auto; background:linear-gradient(var(--lav), transparent); opacity:0.5; }
+  .kicker{ font-size:13px; color:var(--peach); margin-bottom:16px; text-align:center; }
+  h2{
+    font-family:'Fraunces', serif; font-weight:500; font-size:clamp(30px, 5.5vw, 46px);
+    margin:0 auto 22px; color:var(--moon); max-width:17ch; text-align:center;
+  }
+
+  .glass-card{
+    background:var(--glass); border:1px solid var(--glass-brd);
+    backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+    border-radius:22px; padding:40px clamp(20px,5vw,54px);
+  }
+
+  .quote{
+    font-family:'Fraunces', serif; font-style:italic; font-weight:400;
+    font-size:clamp(20px, 3.4vw, 27px); line-height:1.6; color:var(--lav);
+    max-width:36ch; margin:0 auto; text-align:center;
+  }
+
+  .likes{ display:grid; gap:16px; margin-top:36px; }
+  .like-item{
+    display:flex; align-items:center; gap:18px; padding:18px 22px;
+    border-radius:16px; background:rgba(255,255,255,0.03);
+    border:1px solid var(--glass-brd);
+    transition:background .25s ease, transform .25s ease;
+  }
+  .like-item:hover{ background:rgba(255,255,255,0.08); transform:translateX(6px); }
+  .like-item .dot{
+    width:8px; height:8px; border-radius:50%; background:var(--peach); flex-shrink:0;
+    box-shadow:0 0 10px 3px rgba(243,169,184,0.5);
+  }
+  .like-item .txt{ font-family:'Fraunces', serif; font-size:clamp(18px, 2.6vw, 21px); color:var(--ink); }
+  .like-item .txt span{ color:var(--ink-dim); font-family:'Sora'; font-size:13.5px; display:block; margin-top:4px; font-style:normal; }
+
+  .closing{ text-align:center; }
+  .closing p.body{ color:var(--ink-dim); font-size:16px; line-height:1.75; max-width:52ch; margin:0 auto 34px; }
+  .cta-row{ display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+
+  footer{
+    text-align:center; padding:60px 28px 70px; font-size:12px; color:var(--ink-dim);
+    letter-spacing:0.05em; position:relative; z-index:1;
+  }
+  footer b{ color:var(--peach); }
+
+  @media (max-width:480px){
+    section{ padding:76px 0; }
+    .glass-card{ border-radius:18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-video-wrap">
+  <video class="bg-video" autoplay muted loop playsinline id="bgVideo">
+    <source src="https://files.catbox.moe/68ezog.mp4" type="video/mp4">
+  </video>
+</div>
+<div class="bg-tint"></div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="brand">Iman ✧</div>
+  <button class="menu-btn" id="openDrawer" aria-label="Buka menu" aria-expanded="false" aria-controls="drawer">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+  </button>
+</div>
+
+<!-- DRAWER -->
+<div class="scrim" id="scrim"></div>
+<nav class="drawer" id="drawer" aria-hidden="true">
+  <button class="drawer-close" id="closeDrawer" aria-label="Tutup menu">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
+  </button>
+  <h3>Sweet Dream Story</h3>
+  <p class="sub">Jom sembang, atau just singgah tengok vibe je pun boleh.</p>
+  <div class="drawer-links">
+    <a href="#top">Home <span>↑</span></a>
+    <a href="#likes">aku tahu kau scroll <span>↓</span></a>
+    <a href="https://wa.me/601139183035" target="_blank" rel="noopener">WhatsApp Iman <span>↗</span></a>
+    <a href="tel:+601139183035">Call: 011-3918 3035 <span>↗</span></a>
+  </div>
+  <div class="drawer-credit">Dibangunkan oleh <b>MFX OFFICIAL</b></div>
+</nav>
+
+<!-- SOUND TOGGLE -->
+<button class="sound-btn" id="soundBtn" aria-label="Hidupkan bunyi lagu" aria-pressed="false">
+  <svg id="soundIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="4,9 8,9 13,4 13,20 8,15 4,15" fill="currentColor" stroke="none"/>
+    <line x1="17" y1="8" x2="21" y2="16"/>
+    <line x1="21" y1="8" x2="17" y2="16"/>
+  </svg>
+</button>
+
+<div id="top"></div>
+
+<div class="hero">
+  <p class="eyebrow">sweet dream Story</p>
+  <h1 class="name">Iman</h1>
+  <p class="tagline">Kalau hati boleh bercerita, mesti dia cerita pasal mimpi yang tak pernah habis ni.</p>
+  <div class="hero-cta">
+    <a class="btn solid" href="https://wa.me/601139183035" target="_blank" rel="noopener">Sayang 👋</a>
+    <a class="btn ghost" href="#likes">Kenal lagi dekat</a>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <section class="quote-block">
+    <div class="divider"></div>
+    <p class="kicker">Salam Kenal Wak</p>
+    <h2>Bukan sekadar nama, tapi satu vibe.</h2>
+    <div class="glass-card">
+      <p class="quote">"Orang cakap jangan main dengan api takut nanti terjatuh hati Rawrr."</p>
+    </div>
+  </section>
+
+  <section id="likes">
+    <div class="divider"></div>
+    <p class="kicker">Awak Strol Lagi Hurmm</p>
+    <h2>Sebab apa semua orang tak boleh tiru</h2>
+    <div class="likes">
+      <div class="like-item">
+        <span class="dot" aria-hidden="true"></span>
+        <div class="txt">Senyum yang tenang tapi confident
+          <span>bukan main show, memang natural</span>
+        </div>
+      </div>
+      <div class="like-item">
+        <span class="dot" aria-hidden="true"></span>
+        <div class="txt">Cara borak yang buat orang rasa selesa
+          <span>dengar betul-betul, bukan tunggu giliran cakap</span>
+        </div>
+      </div>
+      <div class="like-item">
+        <span class="dot" aria-hidden="true"></span>
+        <div class="txt">Style sendiri, tak ikut trend je
+          <span>ada je satu signature yang orang ingat</span>
+        </div>
+      </div>
+      <div class="like-item">
+        <span class="dot" aria-hidden="true"></span>
+        <div class="txt">Loyal bila dah sayang
+          <span>jenis yang stay bila orang lain dah give up</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="closing">
+    <div class="divider"></div>
+    <p class="kicker">Awak Nak Contact Tak Hehe</p>
+    <h2>Kalau rasa macam nak kenal lagi jauh...</h2>
+    <p class="body">Boleh je WhatsApp terus, tak gigit pun. Cuma jangan main-main kalau tak serius 🌙</p>
+    <div class="cta-row">
+      <a class="btn solid" href="https://wa.me/601139183035" target="_blank" rel="noopener">WhatsApp: 011-3918 3035</a>
+      <a class="btn ghost" href="tel:+601139183035">Call terus</a>
+    </div>
+  </section>
+
+</div>
+
+<footer>made under the same sky, for iman ✧ &nbsp;·&nbsp; Dibangunkan oleh <b>MFX OFFICIAL</b></footer>
+
+<script>
+  (function(){
+    var drawer = document.getElementById('drawer');
+    var scrim = document.getElementById('scrim');
+    var openBtn = document.getElementById('openDrawer');
+    var closeBtn = document.getElementById('closeDrawer');
+
+    function openDrawer(){
+      drawer.classList.add('open');
+      scrim.classList.add('open');
+      drawer.setAttribute('aria-hidden','false');
+      openBtn.setAttribute('aria-expanded','true');
+    }
+    function closeDrawer(){
+      drawer.classList.remove('open');
+      scrim.classList.remove('open');
+      drawer.setAttribute('aria-hidden','true');
+      openBtn.setAttribute('aria-expanded','false');
+    }
+    openBtn.addEventListener('click', openDrawer);
+    closeBtn.addEventListener('click', closeDrawer);
+    scrim.addEventListener('click', closeDrawer);
+    document.querySelectorAll('.drawer-links a[href^="#"]').forEach(function(a){
+      a.addEventListener('click', closeDrawer);
+    });
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape') closeDrawer();
+    });
+
+    // Sound toggle — browsers require a user gesture to unmute
+    var video = document.getElementById('bgVideo');
+    var soundBtn = document.getElementById('soundBtn');
+    soundBtn.addEventListener('click', function(){
+      video.muted = !video.muted;
+      if(!video.muted){ video.play().catch(function(){}); }
+      soundBtn.setAttribute('aria-pressed', String(!video.muted));
+      soundBtn.style.opacity = video.muted ? '1' : '0.85';
+    });
+  })();
+</script>
+
+</body>
+</html>
